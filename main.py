@@ -4,6 +4,8 @@ import json
 import time
 from PIL import Image
 
+# complete start from scratch
+
 class Tile:
     def __init__(self, coords: tuple, valid_neighbours: dict, grid_size: int, ttype: str = "", neighbours: dict = None, collapsed = False):
         self.ttype = ttype
@@ -11,7 +13,7 @@ class Tile:
         self.coords = coords
         self.collapsed = collapsed
         self.valid_neighbours: dict = valid_neighbours
-        self.neighbours: dict = neighbours #valid_neighbours["options"][ttype]
+        self.possible_neighbours: dict = neighbours #valid_neighbours["options"][ttype]
         self.grid_size: int = grid_size
         self.north = (max(self.coords[0] - 1, 0),               self.coords[1])
         self.east  = (self.coords[0],                           min(self.coords[1] + 1, grid_size - 1))
@@ -31,53 +33,6 @@ class Tile:
         self.tiles = [self.tile_north, self.tile_east, self.tile_south, self.tile_west]
 
     # while randomizing tile, check neighbouring tiles for options in tile direction and accordingly update list to randomize
-    def randomize_tile(self, direction: str, updated_tile):
-        tiles_list = []
-        # TODO Fix, add valid neighbours to new ttypes (c_downleft,c_downright,c_upleft,c_upright,s_down,s_left,s_right,s_up,straight_h,straight_w)
-        for index, tile in enumerate(updated_tile.tiles):
-            valid_tiles = []
-            if tile != self:
-                if tile.collapsed:
-                    match index:
-                        case 0:
-                            if tile.neighbours is None:
-                                valid_tiles = []
-                            elif len(tile.neighbours) == 0:
-                                valid_tiles = []
-                            else: valid_tiles = tile.neighbours["south"]
-                        case 1:
-                            if tile.neighbours is None:
-                                valid_tiles = []
-                            elif len(tile.neighbours) == 0:
-                                valid_tiles = []
-                            else: valid_tiles = tile.neighbours["west"]
-                        case 2:
-                            if tile.neighbours is None:
-                                valid_tiles = []
-                            elif len(tile.neighbours) == 0:
-                                valid_tiles = []
-                            else: valid_tiles = tile.neighbours["north"]
-                        case 3:
-                            if tile.neighbours is None:
-                                valid_tiles = []
-                            elif len(tile.neighbours) == 0:
-                                valid_tiles = []
-                            else: valid_tiles = tile.neighbours["east"]
-                        case _:
-                            valid_tiles = []
-            tiles_list.append(valid_tiles)
-                    
-        options = self.neighbours[direction]
-
-        for _list in tiles_list:
-            if len(_list) != 0:
-                options = list(set(options).intersection(set(_list)))
-
-        if len(options) == 0:
-            return "blank"
-        index = random.randint(0, len(options) - 1)
-        return options[index]
-
 
     def update(self, _grid):
         if not self.collapsed:
@@ -86,7 +41,6 @@ class Tile:
         
         if not self.tile_north.collapsed:
             self.tile_north.collapsed = True
-            ttype = self.randomize_tile("north", self.tile_north)
             self.tile_north.ttype = ttype
             self.tile_north.neighbours = self.valid_neighbours["options"][ttype]
             self.tile_north.file = self.valid_neighbours["image_files"][self.valid_neighbours["types"].index(ttype)]
