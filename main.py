@@ -7,13 +7,13 @@ from PIL import Image
 # complete start from scratch
 
 class Tile:
-    def __init__(self, coords: tuple, valid_neighbours: dict, grid_size: int, ttype: str = "", neighbours: dict = None, collapsed = False):
+    def __init__(self, coords: tuple, neighbours: list, grid_size: int, ttype: str = "", collapsed = False):
         self.ttype = ttype
         self.file = None
         self.coords = coords
         self.collapsed = collapsed
-        self.valid_neighbours: dict = valid_neighbours
-        self.possible_neighbours: dict = neighbours #valid_neighbours["options"][ttype]
+        #self.valid_neighbours: dict = valid_neighbours
+        self.possible_neighbours: list = neighbours
         self.grid_size: int = grid_size
         self.north = (max(self.coords[0] - 1, 0),               self.coords[1])
         self.east  = (self.coords[0],                           min(self.coords[1] + 1, grid_size - 1))
@@ -31,8 +31,7 @@ class Tile:
         self.tile_south = _grid[self.south[1]][self.south[0]]
         self.tile_west = _grid[self.west[1]][self.west[0]]
         self.tiles = [self.tile_north, self.tile_east, self.tile_south, self.tile_west]
-
-    # while randomizing tile, check neighbouring tiles for options in tile direction and accordingly update list to randomize
+        
 
     def update(self, _grid):
         if not self.collapsed:
@@ -40,9 +39,7 @@ class Tile:
 
         
         if not self.tile_north.collapsed:
-            self.tile_north.collapsed = True
-            self.tile_north.ttype = ttype
-            self.tile_north.neighbours = self.valid_neighbours["options"][ttype]
+            self.tile_north.neighbours = set(self.valid_neighbours["options"][self.ttype]).intersection(self.tile_north.neighbours)
             self.tile_north.file = self.valid_neighbours["image_files"][self.valid_neighbours["types"].index(ttype)]
 
 
