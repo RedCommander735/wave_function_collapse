@@ -4,12 +4,16 @@ import json
 import time
 from PIL import Image
 
-# complete start from scratch
+# COMPLETE REWORK
+#
+# TODO 
+# - load the list of all possible states into every tile on creation
+# - Implement check for lowest entropy to collapse
+#
 
 class Tile:
     def __init__(self, coords: tuple, possible_states: list,valid_neighbours: dict, grid_size: int, ttype: str = "", collapsed = False):
-        # TODO load the list of all possible states into every tile on creation
-        #
+
         self.ttype = ttype
         self.file = None
         self.coords = coords
