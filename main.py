@@ -7,8 +7,8 @@ from PIL import Image
 # COMPLETE REWORK
 #
 # TODO 
-# - load the list of all possible states into every tile on creation
-# - Implement check for lowest entropy to collapse
+#
+#
 #
 
 class Tile:
@@ -51,7 +51,8 @@ class Tile:
         # Update the state list of all surrounding tiles
         for tile, direction in zip(self.tiles, directions):
             if not tile.collapsed:
-                tile.possible_states = list(set(self.valid_neighbours[direction]).intersection(tile.possible_states))
+                #tile.possible_states = list(set(self.valid_neighbours[direction]).intersection(tile.possible_states))
+                tile.possible_states = list(set(self.valid_neighbours[direction]) & set(tile.possible_states))
 
 def main():
     file = "default"
