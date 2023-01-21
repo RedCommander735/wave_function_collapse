@@ -21,10 +21,10 @@ class Tile:
         self.valid_neighbours: dict = valid_neighbours
         self.possible_states: list = possible_states
         self.grid_size: int = grid_size
-        self.north = (max(self.coords[0] - 1, 0),               self.coords[1])
-        self.east  = (self.coords[0],                           min(self.coords[1] + 1, grid_size - 1))
-        self.south = (min(self.coords[0] + 1, grid_size - 1),   self.coords[1])
-        self.west  = (self.coords[0],                           max(self.coords[1] - 1, 0))
+        self.north = (max(self.coords[0] - 1, 0), self.coords[1])
+        self.east  = (self.coords[0], min(self.coords[1] + 1, grid_size - 1))
+        self.south = (min(self.coords[0] + 1, grid_size - 1), self.coords[1])
+        self.west  = (self.coords[0], max(self.coords[1] - 1, 0))
         self.tile_north = None
         self.tile_east = None
         self.tile_south = None
@@ -43,47 +43,21 @@ class Tile:
         if not self.collapsed:
             return
 
-        
-        if not self.tile_north.collapsed:
-            self.tile_north.neighbours = set(self.valid_neighbours["options"][self.ttype]).intersection(self.tile_north.neighbours)
-            self.tile_north.file = self.valid_neighbours["image_files"][self.valid_neighbours["types"].index(ttype)]
-
-
-        # update corresponding to north
-        
-        if not self.tile_east.collapsed:
-            self.tile_east.collapsed = True
-            ttype = self.randomize_tile("east", self.tile_east)
-            self.tile_east.ttype = ttype
-            self.tile_east.neighbours = self.valid_neighbours["options"][ttype]
-            self.tile_east.file = self.valid_neighbours["image_files"][self.valid_neighbours["types"].index(ttype)]
-
-        
-        if not self.tile_south.collapsed:
-            self.tile_south.collapsed = True
-            ttype = self.randomize_tile("south", self.tile_south)
-            self.tile_south.ttype = ttype
-            self.tile_south.neighbours = self.valid_neighbours["options"][ttype]
-            self.tile_south.file = self.valid_neighbours["image_files"][self.valid_neighbours["types"].index(ttype)]
-
-        
-        if not self.tile_west.collapsed:
-            self.tile_west.collapsed = True
-            ttype = self.randomize_tile("west", self.tile_west)
-            self.tile_west.ttype = ttype
-            self.tile_west.neighbours = self.valid_neighbours["options"][ttype]
-            self.tile_west.file = self.valid_neighbours["image_files"][self.valid_neighbours["types"].index(ttype)]
-
-
+        # Update the state list of all surrounding tiles
+        for tile in self.tiles:
+            if not tile.collapsed:
+                tile.possible_states = list(set(self.valid_neighbours["options"][self.ttype]).intersection(tile.possible_states))
 
 def main():
     file = "default"
     #simple = False
-    if len(sys.argv) > 2:
-        file = sys.argv[1]
-        if sys.argv[2] == "-simple":
-            simple = True
-    elif len(sys.argv) > 1:
+    # if len(sys.argv) > 2:
+    #     file = sys.argv[1]
+    #     if sys.argv[2] == "-simple":
+    #         simple = True
+    # elif len(sys.argv) > 1:
+    #     file = sys.argv[1]
+    if len(sys.argv) > 1:
         file = sys.argv[1]
 
     # Get all data and seed from file
@@ -91,7 +65,7 @@ def main():
         data = json.load(openedfile)
         seed = data["meta"]["seed"]
 
-        # If there is no seed specified use current tile as seed; NEEDS REWORK
+        # If there is no seed specified use current time as seed; NEEDS REWORK
         if len(seed) == 0:
             seed = str(time.time())
             data["meta"]["seed"] = seed
