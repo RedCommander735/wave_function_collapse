@@ -12,24 +12,24 @@ from PIL import Image
 #
 
 class Tile:
-    def __init__(self, coords: tuple, possible_states: list,valid_neighbours: dict, grid_size: int, ttype: str = "", collapsed = False):
+    def __init__(self, coords: tuple[int, int], possible_states: list,valid_neighbours: dict, grid_size: int, ttype: str = "", collapsed = False):
 
-        self.ttype = ttype
-        self.file = None
-        self.coords = coords
-        self.collapsed = collapsed
+        self.ttype: str = ttype
+        self.file: Image = None
+        self.coords: tuple[int, int] = coords
+        self.collapsed: bool = collapsed
         self.valid_neighbours: dict = valid_neighbours
         self.possible_states: list = possible_states
         self.grid_size: int = grid_size
-        self.north = (max(self.coords[0] - 1, 0), self.coords[1])
-        self.east  = (self.coords[0], min(self.coords[1] + 1, grid_size - 1))
-        self.south = (min(self.coords[0] + 1, grid_size - 1), self.coords[1])
-        self.west  = (self.coords[0], max(self.coords[1] - 1, 0))
-        self.tile_north = None
-        self.tile_east = None
-        self.tile_south = None
-        self.tile_west = None
-        self.tiles = []
+        self.north: tuple[int, int] = (max(self.coords[0] - 1, 0), self.coords[1])
+        self.east: tuple[int, int]  = (self.coords[0], min(self.coords[1] + 1, grid_size - 1))
+        self.south: tuple[int, int] = (min(self.coords[0] + 1, grid_size - 1), self.coords[1])
+        self.west: tuple[int, int]  = (self.coords[0], max(self.coords[1] - 1, 0))
+        self.tile_north: Tile = None
+        self.tile_east: Tile = None
+        self.tile_south: Tile = None
+        self.tile_west: Tile = None
+        self.tiles: list = []
 
     def neighbouring_tiles(self, _grid):
         self.tile_north = _grid[self.north[1]][self.north[0]]
@@ -58,17 +58,17 @@ def main():
     # elif len(sys.argv) > 1:
     #     file = sys.argv[1]
     if len(sys.argv) > 1:
-        file = sys.argv[1]
+        file: str = sys.argv[1]
 
     # Get all data and seed from file
     with open(f'json/{file}.json', 'r+', encoding="Utf-8") as openedfile:
-        data = json.load(openedfile)
-        seed = data["meta"]["seed"]
+        data: dict = json.load(openedfile)
+        seed: str = data["meta"]["seed"]
 
         # If there is no seed specified use current time as seed; NEEDS REWORK
         if len(seed) == 0:
             seed = str(time.time())
-            data["meta"]["seed"] = seed
+            data["meta"]["seed"]: str = seed
             openedfile.truncate()
             json.dump(data, openedfile, indent = 4)
 
@@ -80,21 +80,24 @@ def main():
 
     # Load the actual image files into storage instead of reference names
     for index, _file in enumerate(data["image_files"]):
-        data["image_files"][index] = Image.open(f"src/{_file}")
+        data["image_files"][index]: Image = Image.open(f"src/{_file}")
 
     # Grid size
-    size = data["meta"]["size"]
-    generate_image(size, data, file)
+    size: int = data["meta"]["size"]
+
+    states: list = data["types"]
+
+    generate_image(size, data, states, file)
 
 
-def generate_image(size, valid_neighbours, _file):
+def generate_image(size: int, valid_neighbours: dict, possible_states: list, _file: str):
     # Define and generate initial grid
-    grid = []
+    grid: list = []
     for y_pos in range(size):
         row = []
         for x_pos in range(size):
-            tile = Tile((x_pos, y_pos), valid_neighbours, size)
-            row.append(tile)
+            _tile = Tile((x_pos, y_pos), possible_states, valid_neighbours, size)
+            row.append(_tile)
         grid.append(row)
 
     # Update all tiles so the have their neighbouring tiles cached
@@ -117,11 +120,11 @@ def generate_image(size, valid_neighbours, _file):
     grid[y_pos][x_pos].neighbours = valid_neighbours["options"][ttype]
     grid[y_pos][x_pos].file = valid_neighbours["image_files"][valid_neighbours["types"].index(ttype)]
 
-    tile_size = valid_neighbours["meta"]["tile_size"]
+    tile_size: int = valid_neighbours["meta"]["tile_size"]
 
     
     # Generate clean canvas to later add tiles
-    output = Image.new("RGB", (size*tile_size, size*tile_size))
+    output: Image = Image.new("RGB", (size*tile_size, size*tile_size))
 
     # Main loop
     total_start = time.perf_counter()
