@@ -7,7 +7,7 @@ import pygame
 # COMPLETE REWORK
 #
 # TODO 
-# - Render image after each iteration
+# - Probaply fix update method, somehow the update method works, but if multiple tiles should have updated the same tile, it does not work
 #
 #
 
@@ -182,6 +182,7 @@ def generate_image(size: int, data: dict, possible_states: list[str]):
 
             if  min_tiles:
 
+
                 lowest_entropy_tile: Tile = random.choice(min_tiles)
 
                 _tile_state: str = random.choice(lowest_entropy_tile.possible_states)
@@ -191,6 +192,7 @@ def generate_image(size: int, data: dict, possible_states: list[str]):
                 lowest_entropy_tile.valid_neighbours: dict = data["options"][_tile_state]
                 lowest_entropy_tile.possible_states: list[str] = [_tile_state]
                 lowest_entropy_tile.file: pygame.Surface = data["image_files"][data["types"].index(_tile_state)]
+
 
 
 if __name__ == '__main__':
