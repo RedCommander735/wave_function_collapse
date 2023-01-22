@@ -12,12 +12,12 @@ from PIL import Image
 #
 
 class Tile:
-    def __init__(self, coords: tuple[int, int], possible_states: list, grid_size: int, tile_state: str = "", collapsed = False):
+    def __init__(self, coords: tuple[int, int], possible_states: list, grid_size: int):
 
-        self.tile_state: str = tile_state
+        self.tile_state: str = ""
         self.file: Image = None
         self.coords: tuple[int, int] = coords
-        self.collapsed: bool = collapsed
+        self.collapsed: bool = False
         self.valid_neighbours: dict = []
         self.possible_states: list = possible_states
         self.grid_size: int = grid_size
@@ -51,7 +51,8 @@ class Tile:
         # Update the state list of all surrounding tiles
         for tile, direction in zip(self.tiles, directions):
             if not tile.collapsed:
-                tile.possible_states = list(set(self.valid_neighbours[direction]) & set(tile.possible_states))
+                tile.possible_states = list(set(self.valid_neighbours[direction]).intersection(tile.possible_states))
+                # tile.possible_states = list(set(self.valid_neighbours[direction]) & set(tile.possible_states))
 
 def main():
     file = "default"
@@ -70,7 +71,7 @@ def main():
         data: dict = json.load(openedfile)
         seed: str = data["meta"]["seed"]
 
-        # If there is no seed specified use current time as seed; NO WORKY
+        # If there is no seed specified use current time as seed; NEEDS REWORK
         if len(seed) == 0:
             seed = str(time.time())
             data["meta"]["seed"]: str = seed
@@ -132,12 +133,10 @@ def generate_image(size: int, data: dict, possible_states: list[str], _file: str
     output: Image = Image.new("RGB", (size*tile_size, size*tile_size))
 
     # Main loop
-    total_start = time.perf_counter()
     while True:
         # Iterate over the whole grid, update all tiles and check if finished
         min_states = len(possible_states)
         min_tiles = []
-        start = time.perf_counter()
         finished = True
         for y_pos in range(size):
             for x_pos in range(size):
@@ -167,19 +166,7 @@ def generate_image(size: int, data: dict, possible_states: list[str], _file: str
             lowest_entropy_tile.valid_neighbours: dict = data["options"][_tile_state]
             lowest_entropy_tile.possible_states: list[str] = [_tile_state]
             lowest_entropy_tile.file: Image = data["image_files"][data["types"].index(_tile_state)]
-
-
-
-        duration = time.perf_counter() - total_start
-
-        # Display time of iteration
-        dur = f'{duration:.2f}s'
-        if duration > 60:
-            duration = duration / 60
-            dur = f'{int(duration)}min {((duration - int(duration)) * 60):.2f}s  '
-        time_string = f'{(time.perf_counter() - start):.2f}'
-        print(f'Iterationsdauer: {time_string}s, Dauer: {dur} ', end="\r")
-
+                
         if finished:
             print("\n----- Finished -----")
             break

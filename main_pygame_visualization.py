@@ -51,8 +51,8 @@ class Tile:
         # Update the state list of all surrounding tiles
         for tile, direction in zip(self.tiles, directions):
             if not tile.collapsed:
-                #tile.possible_states = list(set(self.valid_neighbours[direction]).intersection(tile.possible_states))
-                tile.possible_states = list(set(self.valid_neighbours[direction]) & set(tile.possible_states))
+                tile.possible_states = list(set(self.valid_neighbours[direction]).intersection(tile.possible_states))
+                # tile.possible_states = list(set(self.valid_neighbours[direction]) & set(tile.possible_states))
 
 def main():
     file = "default"
@@ -75,7 +75,7 @@ def main():
         if len(seed) == 0:
             seed = str(time.time())
             data["meta"]["seed"]: str = seed
-            openedfile.truncate()
+            openedfile.truncate(len(str(data)))
             json.dump(data, openedfile, indent = 4)
 
     random.seed(seed)
@@ -141,7 +141,6 @@ def generate_image(size: int, data: dict, possible_states: list[str]):
 
     running = True
 
-    total_start = time.perf_counter()
     while running:
 
         for event in pygame.event.get():
@@ -162,8 +161,6 @@ def generate_image(size: int, data: dict, possible_states: list[str]):
             min_states = len(possible_states)
             min_tiles = []
 
-            start = time.perf_counter()
-
             finished = True
             for y_pos in range(size):
                 for x_pos in range(size):
@@ -174,33 +171,27 @@ def generate_image(size: int, data: dict, possible_states: list[str]):
             for y_pos in range(size):
                 for x_pos in range(size):
                     __tile: Tile = grid[y_pos][x_pos]
-                    states: int = __tile.get_states_count()
-                    if states < min_states and states != 1:
-                        min_states = states
-                        min_tiles = []
-                        min_tiles.append(__tile)
-                    elif states == min_states:
-                        min_tiles.append(__tile)
+                    if not __tile.collapsed:
+                        states: int = __tile.get_states_count()
+                        if states < min_states:
+                            min_states = states
+                            min_tiles = []
+                            min_tiles.append(__tile)
+                        elif states == min_states:
+                            min_tiles.append(__tile)
 
-            lowest_entropy_tile: Tile = random.choice(min_tiles)
+            if  min_tiles:
 
-            _tile_state: str = random.choice(lowest_entropy_tile.possible_states)
+                lowest_entropy_tile: Tile = random.choice(min_tiles)
 
-            lowest_entropy_tile.collapsed: bool = True
-            lowest_entropy_tile.tile_state: str = _tile_state
-            lowest_entropy_tile.valid_neighbours: dict = data["options"][_tile_state]
-            lowest_entropy_tile.possible_states: list[str] = [_tile_state]
-            lowest_entropy_tile.file: pygame.Surface = data["image_files"][data["types"].index(_tile_state)]
+                _tile_state: str = random.choice(lowest_entropy_tile.possible_states)
 
-            duration = time.perf_counter() - total_start
+                lowest_entropy_tile.collapsed: bool = True
+                lowest_entropy_tile.tile_state: str = _tile_state
+                lowest_entropy_tile.valid_neighbours: dict = data["options"][_tile_state]
+                lowest_entropy_tile.possible_states: list[str] = [_tile_state]
+                lowest_entropy_tile.file: pygame.Surface = data["image_files"][data["types"].index(_tile_state)]
 
-        # Display time of iteration
-        dur = f'{duration:.2f}s'
-        if duration > 60:
-            duration = duration / 60
-            dur = f'{int(duration)}min {((duration - int(duration)) * 60):.2f}s  '
-        time_string = f'{(time.perf_counter() - start):.2f}'
-        print(f'Iterationsdauer: {time_string}s, Dauer: {dur} ', end="\r")
 
 if __name__ == '__main__':
     main()

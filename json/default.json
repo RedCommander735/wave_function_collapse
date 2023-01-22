@@ -1,7 +1,7 @@
 {
     "meta": {
         "size": 20,
-        "seed": "1",
+        "seed": "2485948685428",
         "tile_size": 10
     },
     "types": ["t_up","t_down","t_right","t_left","cross","blank","c_downleft","c_downright","c_upleft","c_upright","s_down","s_left","s_right","s_up","straight_h","straight_w"
