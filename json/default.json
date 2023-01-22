@@ -1,294 +1,49 @@
 {
     "meta": {
         "size": 20,
-        "seed": "1674208369",
+        "seed": "1",
         "tile_size": 10
     },
-    "types": [
-        "t_up",
-        "t_down",
-        "t_right",
-        "t_left",
-        "cross",
-        "blank",
-        "c_downleft",
-        "c_downright",
-        "c_upleft",
-        "c_upright",
-        "s_down",
-        "s_left",
-        "s_right",
-        "s_up",
-        "straight_h",
-        "straight_w"
+    "types": ["t_up","t_down","t_right","t_left","cross","blank","c_downleft","c_downright","c_upleft","c_upright","s_down","s_left","s_right","s_up","straight_h","straight_w"
     ],
-    "image_files": [
-        "up.png",
-        "down.png",
-        "right.png",
-        "left.png",
-        "cross.png",
-        "blank.png",
-        "c_downleft.png",
-        "c_downright.png",
-        "c_upleft.png",
-        "c_upright.png",
-        "s_down.png",
-        "s_left.png",
-        "s_right.png",
-        "s_up.png",
-        "straight_h.png",
-        "straight_w.png"
+    "image_files": ["up.png","down.png","right.png","left.png","cross.png","blank.png","c_downleft.png","c_downright.png","c_upleft.png","c_upright.png","s_down.png","s_left.png","s_right.png","s_up.png","straight_h.png","straight_w.png"
     ],
     "options": {
         "t_up": {
-            "north": [
-                "t_down",
-                "t_right",
-                "t_left",
-                "cross",
-                "c_downright",
-                "c_downleft",
-                "s_down",
-                "straight_w"
-            ],
-            "south": [
-                "t_down",
-                "blank",
-                "c_downright",
-                "c_downleft",
-                "s_down",
-                "s_left",
-                "s_right",
-                "straight_h"
-            ],
-            "west": [
-                "t_up",
-                "t_down",
-                "t_right",
-                "cross",
-                "c_downright",
-                "c_upright",
-                "s_right",
-                "straight_h"
-            ],
-            "east": [
-                "t_up",
-                "t_down",
-                "t_left",
-                "cross",
-                "c_downleft",
-                "c_upleft",
-                "s_left",
-                "straight_h"
-            ]
+            "north": ["t_down","t_left","t_right","cross","c_downright","c_downleft","s_down","straight_w"],
+            "south": ["t_down","blank","c_downright","c_downleft","s_down","s_left","s_right","straight_h"],
+            "west": ["s_right","c_upright","c_downright","t_right","t_down","t_up","cross","straight_h"],
+            "east": ["s_left","c_upleft","c_downleft","t_left","t_down","t_up","cross","straight_w"]
         },
         "t_down": {
-            "north": [
-                "t_up",
-                "blank",
-                "s_left",
-                "s_right",
-                "s_up",
-                "straight_h"
-            ],
-            "south": [
-                "t_up",
-                "t_right",
-                "t_left",
-                "cross",
-                "c_upleft",
-                "c_upright",
-                "s_up",
-                "straight_w"
-            ],
-            "west": [
-                "t_up",
-                "t_down",
-                "t_right",
-                "cross",
-                "c_downright",
-                "c_upright",
-                "s_right",
-                "straight_h"
-            ],
-            "east": [
-                "t_up",
-                "t_down",
-                "t_left",
-                "cross",
-                "c_downleft",
-                "c_upleft",
-                "s_left",
-                "straight_h"
-            ]
+            "north": ["blank","c_upleft","c_upright","s_left","s_right","s_up","straight_h","t_up"],
+            "south": ["c_upleft","c_upright","s_up","straight_w","t_up","t_left","t_right","cross"],
+            "west": ["s_right","c_upright","c_downright","t_right","t_down","t_up","cross","straight_h"],
+            "east": ["s_left","c_upleft","c_downleft","t_left","t_down","t_up","cross","straight_w"]
         },
         "t_right": {
-            "north": [
-                "t_down",
-                "t_right",
-                "t_left",
-                "cross",
-                "c_downright",
-                "c_downleft",
-                "s_down",
-                "straight_w"
-            ],
-            "south": [
-                "t_up",
-                "t_right",
-                "t_left",
-                "cross",
-                "c_upleft",
-                "c_upright",
-                "s_up",
-                "straight_w"
-            ],
-            "west": [
-                "t_left",
-                "blank",
-                "c_downleft",
-                "s_down",
-                "s_left",
-                "s_up",
-                "straight_w"
-            ],
-            "east": [
-                "t_up",
-                "t_down",
-                "t_left",
-                "cross",
-                "c_downleft",
-                "c_upleft",
-                "s_left",
-                "straight_h"
-            ]
+            "north": ["t_down","t_left","t_right","cross","c_downright","c_downleft","s_down","straight_w"],
+            "south": ["c_upleft","c_upright","s_up","straight_w","t_up","t_left","t_right","cross"],
+            "west": ["s_left","c_upleft","c_downleft","t_left","blank","straight_w","s_down","s_up"],
+            "east": ["s_left","c_upleft","c_downleft","t_left","t_down","t_up","cross","straight_w"]
         },
         "t_left": {
-            "north": [
-                "t_down",
-                "t_left",
-                "t_right",
-                "cross",
-                "c_downright",
-                "c_downleft",
-                "s_down",
-                "straight_w"
-            ],
-            "south": [
-                "t_up",
-                "t_left",
-                "t_right",
-                "cross",
-                "c_upleft",
-                "c_upright",
-                "s_up",
-                "straight_w"
-            ],
-            "west": [
-                "t_up",
-                "t_down",
-                "t_right",
-                "cross",
-                "c_downright",
-                "c_upright",
-                "s_right",
-                "straight_h"
-            ],
-            "east": [
-                "t_right",
-                "blank",
-                "c_downright",
-                "c_upright",
-                "s_down",
-                "s_right",
-                "s_up",
-                "straight_w"
-            ]
+            "north": ["t_down","t_left","t_right","cross","c_downright","c_downleft","s_down","straight_w"],
+            "south": ["c_upleft","c_upright","s_up","straight_w","t_up","t_left","t_right","cross"],
+            "west": ["s_right","c_upright","c_downright","t_right","t_down","t_up","cross","straight_h"],
+            "east": ["s_right","c_upright","c_downright","t_right","blank","straight_w","s_down","s_up"]
         },
         "cross": {
-            "north": [
-                "t_down",
-                "t_left",
-                "t_right",
-                "cross",
-                "c_downright",
-                "c_downleft",
-                "s_down",
-                "straight_w"
-            ],
-            "south": [
-                "t_up",
-                "t_left",
-                "t_right",
-                "cross",
-                "c_upleft",
-                "c_upright",
-                "s_up",
-                "straight_w"
-            ],
-            "west": [
-                "t_up",
-                "t_down",
-                "t_right",
-                "cross",
-                "c_downright",
-                "c_upright",
-                "s_right",
-                "straight_h"
-            ],
-            "east": [
-                "t_up",
-                "t_down",
-                "t_left",
-                "cross",
-                "c_downleft",
-                "c_upleft",
-                "s_left",
-                "straight_h"
-            ]
+            "north": ["t_down","t_left","t_right","cross","c_downright","c_downleft","s_down","straight_w"],
+            "south": ["c_upleft","c_upright","s_up","straight_w","t_up","t_left","t_right","cross"],
+            "west": ["s_right","c_upright","c_downright","t_right","t_down","t_up","cross","straight_h"],
+            "east": ["s_left","c_upleft","c_downleft","t_left","t_down","t_up","cross","straight_w"]
         },
         "blank": {
-            "north": [
-                "t_up",
-                "blank",
-                "c_upleft",
-                "c_upright",
-                "s_left",
-                "s_right",
-                "s_up",
-                "straight_h"
-            ],
-            "south": [
-                "t_down",
-                "blank",
-                "c_downright",
-                "c_downleft",
-                "s_down",
-                "s_left",
-                "s_right",
-                "straight_h"
-            ],
-            "west": [
-                "t_left",
-                "blank",
-                "c_downleft",
-                "c_upleft",
-                "s_down",
-                "s_left",
-                "s_up",
-                "straight_w"
-            ],
-            "east": [
-                "t_right",
-                "blank",
-                "c_downright",
-                "c_upright",
-                "s_down",
-                "s_right",
-                "s_up",
-                "straight_w"
-            ]
+            "north": ["blank","c_upleft","c_upright","s_left","s_right","s_up","straight_h","t_up"],
+            "south":["t_down","blank","c_downright","c_downleft","s_down","s_left","s_right","straight_h"],
+            "west":["s_left","c_upleft","c_downleft","t_left","blank","straight_w","s_down","s_up"],
+            "east": ["s_right","c_upright","c_downright","t_right","blank","straight_w","s_down","s_up"]
         },
         "c_downleft": {
             "north":["blank","c_upleft","c_upright","s_left","s_right","s_up","straight_h","t_up"],

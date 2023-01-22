@@ -12,13 +12,13 @@ from PIL import Image
 #
 
 class Tile:
-    def __init__(self, coords: tuple[int, int], possible_states: list, grid_size: int, ttype: str = "", collapsed = False):
+    def __init__(self, coords: tuple[int, int], possible_states: list, grid_size: int, tile_state: str = "", collapsed = False):
 
-        self.ttype: str = ttype
+        self.tile_state: str = tile_state
         self.file: Image = None
         self.coords: tuple[int, int] = coords
         self.collapsed: bool = collapsed
-        self.valid_neighbours: dict = None
+        self.valid_neighbours: dict = []
         self.possible_states: list = possible_states
         self.grid_size: int = grid_size
         self.north: tuple[int, int] = (max(self.coords[0] - 1, 0), self.coords[1])
@@ -51,7 +51,6 @@ class Tile:
         # Update the state list of all surrounding tiles
         for tile, direction in zip(self.tiles, directions):
             if not tile.collapsed:
-                #tile.possible_states = list(set(self.valid_neighbours[direction]).intersection(tile.possible_states))
                 tile.possible_states = list(set(self.valid_neighbours[direction]) & set(tile.possible_states))
 
 def main():
@@ -71,11 +70,11 @@ def main():
         data: dict = json.load(openedfile)
         seed: str = data["meta"]["seed"]
 
-        # If there is no seed specified use current time as seed
+        # If there is no seed specified use current time as seed; NO WORKY
         if len(seed) == 0:
             seed = str(time.time())
             data["meta"]["seed"]: str = seed
-            openedfile.truncate()
+            openedfile.truncate(len(str(data)))
             json.dump(data, openedfile, indent = 4)
 
     random.seed(seed)
@@ -116,15 +115,15 @@ def generate_image(size: int, data: dict, possible_states: list[str], _file: str
     y_pos = random.randint(0, size - 1)
 
     # Initialize first tile
-    ttype: str = random.choice(possible_states)
+    tile_state: str = random.choice(possible_states)
 
     initial_tile: Tile = grid[y_pos][x_pos]
 
     initial_tile.collapsed: bool = True
-    initial_tile.ttype: str = ttype
-    initial_tile.valid_neighbours: dict = data["options"][ttype]
-    initial_tile.possible_states: list[str] = [ttype]
-    initial_tile.file: Image = data["image_files"][data["types"].index(ttype)]
+    initial_tile.tile_state: str = tile_state
+    initial_tile.valid_neighbours: dict = data["options"][tile_state]
+    initial_tile.possible_states: list[str] = [tile_state]
+    initial_tile.file: Image = data["image_files"][data["types"].index(tile_state)]
 
     tile_size: int = data["meta"]["tile_size"]
 
@@ -150,22 +149,24 @@ def generate_image(size: int, data: dict, possible_states: list[str], _file: str
             for x_pos in range(size):
                 __tile: Tile = grid[y_pos][x_pos]
                 states: int = __tile.get_states_count()
-                if states < min_states:
+                if states < min_states and states != 1:
                     min_states = states
                     min_tiles = []
                     min_tiles.append(__tile)
                 elif states == min_states:
                     min_tiles.append(__tile)
 
-        lowest_entropy_tile: Tile = random.choice(min_tiles)
+        if min_tiles:
 
-        _ttype: str = random.choice(lowest_entropy_tile.possible_states)
+            lowest_entropy_tile: Tile = random.choice(min_tiles)
 
-        lowest_entropy_tile.collapsed: bool = True
-        lowest_entropy_tile.ttype: str = _ttype
-        lowest_entropy_tile.valid_neighbours: dict = data["options"][_ttype]
-        lowest_entropy_tile.possible_states: list[str] = [_ttype]
-        lowest_entropy_tile.file: Image = data["image_files"][data["types"].index(_ttype)]
+            _tile_state: str = random.choice(lowest_entropy_tile.possible_states)
+
+            lowest_entropy_tile.collapsed: bool = True
+            lowest_entropy_tile.tile_state: str = _tile_state
+            lowest_entropy_tile.valid_neighbours: dict = data["options"][_tile_state]
+            lowest_entropy_tile.possible_states: list[str] = [_tile_state]
+            lowest_entropy_tile.file: Image = data["image_files"][data["types"].index(_tile_state)]
 
 
 
