@@ -72,7 +72,7 @@ def main():
         data: dict = json.load(openedfile)
         seed: str = data["meta"]["seed"]
 
-        # If there is no seed specified use current time as seed; NEEDS REWORK
+        # If there is no seed specified use current time as seed
         if len(seed) == 0:
             seed = str(time.time())
             data["meta"]["seed"]: str = seed
@@ -116,7 +116,7 @@ def generate_image(size: int, data: dict, possible_states: list[str]):
     x_pos = random.randint(0, size - 1)
     y_pos = random.randint(0, size - 1)
 
-    # Initialize first tile; EVERYTHIN BELOW NEEDS REWORK
+    # Initialize first tile
     ttype: str = random.choice(possible_states)
 
     initial_tile: Tile = grid[y_pos][x_pos]
@@ -159,7 +159,7 @@ def generate_image(size: int, data: dict, possible_states: list[str]):
         pygame.display.update()
 
         if not finished:
-            # Iterate over the whole grid, update all tiles and check if finished; SHOULD WORK FINE
+            # Iterate over the whole grid, update all tiles and check if finished
             min_states = len(possible_states)
             min_tiles = []
 
