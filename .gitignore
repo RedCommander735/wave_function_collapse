@@ -1,2 +1,8 @@
+# Ignore these files
 .vscode
-main_old.py
+json/*
+img/*
+
+# Keep default files
+!json/default.json
+!img/default.png
