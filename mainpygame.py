@@ -2,6 +2,7 @@ import random
 import sys
 import json
 import time
+import pygame
 from PIL import Image
 
 # COMPLETE REWORK
@@ -12,12 +13,12 @@ from PIL import Image
 #
 
 class Tile:
-    def __init__(self, coords: tuple[int, int], possible_states: list, grid_size: int, ttype: str = "", collapsed = False):
+    def __init__(self, coords: tuple[int, int], possible_states: list, grid_size: int):
 
-        self.ttype: str = ttype
-        self.file: Image = None
+        self.ttype: str = ""
+        self.file: pygame.Surface = None
         self.coords: tuple[int, int] = coords
-        self.collapsed: bool = collapsed
+        self.collapsed: bool = False
         self.valid_neighbours: dict = None
         self.possible_states: list = possible_states
         self.grid_size: int = grid_size
@@ -86,17 +87,17 @@ def main():
 
     # Load the actual image files into storage instead of reference names
     for index, _file in enumerate(data["image_files"]):
-        data["image_files"][index]: Image = Image.open(f"src/{_file}")
+        data["image_files"][index]: pygame.Surface = pygame.image.load(f"src/{_file}")
 
     # Grid size
     size: int = data["meta"]["size"]
 
     states: list[str] = data["types"]
 
-    generate_image(size, data, states, file)
+    generate_image(size, data, states)
 
 
-def generate_image(size: int, data: dict, possible_states: list[str], _file: str):
+def generate_image(size: int, data: dict, possible_states: list[str]):
     # Define and generate initial grid
     grid: list = []
     for y_pos in range(size):
@@ -124,52 +125,75 @@ def generate_image(size: int, data: dict, possible_states: list[str], _file: str
     initial_tile.ttype: str = ttype
     initial_tile.valid_neighbours: dict = data["options"][ttype]
     initial_tile.possible_states: list[str] = [ttype]
-    initial_tile.file: Image = data["image_files"][data["types"].index(ttype)]
+    initial_tile.file: pygame.Surface = data["image_files"][data["types"].index(ttype)]
 
     tile_size: int = data["meta"]["tile_size"]
 
     
-    # Generate clean canvas to later add tiles
-    output: Image = Image.new("RGB", (size*tile_size, size*tile_size))
+    
 
     # Main loop
+
+    pygame.init()
+    
+    # Generate clean canvas to later add tiles
+    gameDisplay = pygame.display.set_mode((size*tile_size, size*tile_size))
+    finished = False
+
+    running = True
+
     total_start = time.perf_counter()
-    while True:
-        # Iterate over the whole grid, update all tiles and check if finished; SHOULD WORK FINE
-        min_states = len(possible_states)
-        min_tiles = []
-        start = time.perf_counter()
-        finished = True
-        for y_pos in range(size):
-            for x_pos in range(size):
-                grid[y_pos][x_pos].update(grid)
-                if not grid[y_pos][x_pos].collapsed:
-                    finished = False
+    while running:
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        gameDisplay.fill((0,0,0))
 
         for y_pos in range(size):
             for x_pos in range(size):
-                __tile: Tile = grid[y_pos][x_pos]
-                states: int = __tile.get_states_count()
-                if states < min_states:
-                    min_states = states
-                    min_tiles = []
-                    min_tiles.append(__tile)
-                elif states == min_states:
-                    min_tiles.append(__tile)
+                if grid[y_pos][x_pos].collapsed:
+                    gameDisplay.blit(grid[y_pos][x_pos].file, (x_pos*tile_size, y_pos*tile_size))
 
-        lowest_entropy_tile: Tile = random.choice(min_tiles)
+        pygame.display.update()
 
-        _ttype: str = random.choice(lowest_entropy_tile.possible_states)
+        if not finished:
+            # Iterate over the whole grid, update all tiles and check if finished; SHOULD WORK FINE
+            min_states = len(possible_states)
+            min_tiles = []
 
-        lowest_entropy_tile.collapsed: bool = True
-        lowest_entropy_tile.ttype: str = _ttype
-        lowest_entropy_tile.valid_neighbours: dict = data["options"][_ttype]
-        lowest_entropy_tile.possible_states: list[str] = [_ttype]
-        lowest_entropy_tile.file: Image = data["image_files"][data["types"].index(_ttype)]
+            start = time.perf_counter()
 
+            finished = True
+            for y_pos in range(size):
+                for x_pos in range(size):
+                    grid[y_pos][x_pos].update(grid)
+                    if not grid[y_pos][x_pos].collapsed:
+                        finished = False
 
+            for y_pos in range(size):
+                for x_pos in range(size):
+                    __tile: Tile = grid[y_pos][x_pos]
+                    states: int = __tile.get_states_count()
+                    if states < min_states:
+                        min_states = states
+                        min_tiles = []
+                        min_tiles.append(__tile)
+                    elif states == min_states:
+                        min_tiles.append(__tile)
 
-        duration = time.perf_counter() - total_start
+            lowest_entropy_tile: Tile = random.choice(min_tiles)
+
+            _ttype: str = random.choice(lowest_entropy_tile.possible_states)
+
+            lowest_entropy_tile.collapsed: bool = True
+            lowest_entropy_tile.ttype: str = _ttype
+            lowest_entropy_tile.valid_neighbours: dict = data["options"][_ttype]
+            lowest_entropy_tile.possible_states: list[str] = [_ttype]
+            lowest_entropy_tile.file: pygame.Surface = data["image_files"][data["types"].index(_ttype)]
+
+            duration = time.perf_counter() - total_start
 
         # Display time of iteration
         dur = f'{duration:.2f}s'
@@ -178,16 +202,6 @@ def generate_image(size: int, data: dict, possible_states: list[str], _file: str
             dur = f'{int(duration)}min {((duration - int(duration)) * 60):.2f}s  '
         time_string = f'{(time.perf_counter() - start):.2f}'
         print(f'Iterationsdauer: {time_string}s, Dauer: {dur} ', end="\r")
-
-        if finished:
-            print("\n----- Finished -----")
-            break
-
-    # Convert grid to Image; SHOULD WORK
-    for y_pos in range(size):
-        for x_pos in range(size):
-            output.paste(grid[y_pos][x_pos].file, (x_pos*tile_size, y_pos*tile_size))
-            output.save(f"img/{_file}.png")
 
 if __name__ == '__main__':
     main()
