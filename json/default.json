@@ -35,7 +35,11 @@
             "north": ["blank","t_up"],
             "south":["t_down","blank"],
             "west":["t_left","blank"],
+<<<<<<< HEAD
             "east": ["t_right","blank"]
+=======
+            "east": ["t_right","blank"] 
+>>>>>>> 8d7fddfd1af608e1185e6c32f54ef0b7d0e867ef
         }
     }
 }
