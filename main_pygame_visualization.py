@@ -56,7 +56,7 @@ class Tile:
 
 def main():
     file = "default"
-    #simple = False
+    #simple = False 
     # if len(sys.argv) > 2:
     #     file = sys.argv[1]
     #     if sys.argv[2] == "-simple":

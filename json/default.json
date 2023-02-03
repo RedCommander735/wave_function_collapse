@@ -35,7 +35,7 @@
             "north": ["blank","t_up"],
             "south":["t_down","blank"],
             "west":["t_left","blank"],
-            "east": ["t_right","blank"]
+            "east": ["t_right","blank"] 
         }
     }
 }
